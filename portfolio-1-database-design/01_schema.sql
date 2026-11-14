@@ -115,7 +115,8 @@ CREATE TABLE ledger_entry (
     account_id      BIGINT        NOT NULL REFERENCES account(account_id),
     direction       CHAR(6)       NOT NULL CHECK (direction IN ('DEBIT','CREDIT')),
     amount          NUMERIC(18,2) NOT NULL CHECK (amount > 0),
-    balance_after   NUMERIC(18,2) NOT NULL CHECK (balance_after >= 0),
+    balance_after   NUMERIC(18,2) NOT NULL,   -- no >= 0 CHECK: GL legs may be negative;
+                                              -- customer overdrafts are blocked on ACCOUNT
     created_at      TIMESTAMPTZ   NOT NULL DEFAULT now(),
     UNIQUE (txn_id, account_id, direction)
 );

@@ -1,0 +1,5 @@
+"table_name","count"
+"customer",50004
+"account",69943
+"txn",569928
+"ledger_entry",1109958

@@ -1,2 +1,3 @@
-Claude was used for design guidance and starter scripts.
-I personally ran tests myself, made modificationst to documentation and some changes.
+- Claude was used for design guidance and starter scripts.
+- I personally ran scripts, tests myself, made modificationst to documentation and other changes.
+- https://aiven.io was used for the postgresql simulation

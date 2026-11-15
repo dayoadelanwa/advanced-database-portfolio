@@ -1,0 +1,8 @@
+"account_number","owner","account","balance"
+"0123456781","Ada Okafor","WALLET",225000.00
+"0123456783","Musa Bello","WALLET",85000.00
+"0123456784","Tolu Adeyemi","WALLET",15000.00
+"0123456785","Ngozi Eze","CURRENT",3400000.00
+"0123456790","Ngozi Eze","Concurrency Lab A",50000.00
+"0123456791","Ngozi Eze","Concurrency Lab B",50000.00
+"9000000004","Transfer Fee Income","Transfer Fee Income",0.00

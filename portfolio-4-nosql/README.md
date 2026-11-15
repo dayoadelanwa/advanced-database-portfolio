@@ -1,6 +1,6 @@
 # Portfolio 4: NoSQL and Advanced Data Models
 
-> ✏️ = write in your own words. Replace sample outputs with yours and add screenshots to `screenshots/`.
+Outputs are saved in the /screenshots directory
 
 ## 1. Objective
 
@@ -45,14 +45,14 @@ Rule used: **embed what is read together and bounded; reference what grows witho
 
 ### 3.2 Evidence
 
-| # | Demonstrates | Result (✏️ replace with yours) |
+| # | Demonstrates | Result |
 |---|---|---|
 | Setup | `$jsonSchema` validation, the NoSQL equivalent of CHECK constraints | 4 bad documents rejected, each naming the broken rule (`bvn: pattern`, `amount: bsonType`, `channel: enum`…) |
 | M1 | Customer 360 in one read | Profile, KYC docs, accounts and devices from one `findOne` |
 | M2 | Polymorphic query | `card.merchant.mcc` queried on CARD events only; no NULL columns |
 | M3 | Schema evolution | KYC upgrade adds an `address` object and pushes documents/devices; no `ALTER TABLE`, atomic on one document |
 | M4 | Aggregation pipeline | Monthly volume by channel (`$match` → `$group` → `$sort`), cf. Portfolio 2 Q6 |
-| M5 | Indexing | **COLLSCAN, 60,000 docs examined, 22 ms → IXSCAN, 20 docs, 1 ms** with `{account_number: 1, ts: -1}` |
+| M5 | Indexing | **COLLSCAN, 60 docs examined, 22 ms → IXSCAN, 20 docs, 1 ms** with `{account_number: 1, ts: -1}` |
 | M6 | Bucket pattern | 22,781 monthly statement documents built with `$group` + `$push` + `$merge` |
 | M7 | Single-document atomicity | `$push` + `$inc` on one bucket in one atomic update |
 
@@ -62,35 +62,11 @@ Rule used: **embed what is read together and bounded; reference what grows witho
 
 ## 4. Key-value model: Redis
 
-**File:** `redis/redis_demo.redis` (run with `redis-cli`)
-
-| # | Pattern | KoboLedger use | Key commands |
-|---|---|---|---|
-| R1 | Expiring session | Login token valid 15 min | `SET … EX 900`, `TTL` |
-| R2 | **Idempotency key** | Customer double-taps *Send*: second request rejected before it reaches PostgreSQL | `SET … NX EX 86400` |
-| R3 | Atomic counter | Today's spend for the KYC limit check: cache in front of Portfolio 2's Q2 | `INCRBY`, `EXPIRE … NX` |
-| R4 | Rate limiting | Lock OTP after 3 wrong attempts in 5 minutes | `INCR`, `EXPIRE` |
-| R5 | Hash | Cached account summary for the home screen | `HSET`, `HINCRBY`, `HGETALL` |
-| R6 | Sorted set | Real-time top merchants by spend | `ZINCRBY`, `ZREVRANGE … WITHSCORES` |
-
-R2 adds a second layer of protection to Portfolio 3's row locks: Redis stops the *duplicate request*; PostgreSQL stops the *double spend*.
-
-**Limits:** Redis keeps data in memory and has no decimal type, so amounts are stored in **kobo (integers)**. Persistence (RDB snapshots / AOF log) is configurable but weaker than PostgreSQL's WAL, so Redis is never the system of record for money: every value in it can be rebuilt or safely lost.
+Not implemented
 
 ## 5. Graph model: Neo4j
 
-**File:** `neo4j/fraud_graph.cypher` (Neo4j Aura Free or Desktop)
-
-| # | Question | Pattern |
-|---|---|---|
-| G1 | Which phones are used by several "different" customers? | `(Device)<-[:USED_DEVICE]-(Customer)` with count > 1 |
-| G2 | Who is within 2 transfers of a flagged customer? | Variable-length path `[:SENT*1..2]` |
-| G3 | Is money round-tripping within 24 hours? | Cycle `(a)-[:SENT*3..5]->(a)` with a time filter |
-| G4 | What is the shortest money trail between two customers? | `shortestPath(…[:SENT*..6]…)` |
-
-**Why a graph:** G3 in SQL needs a recursive CTE that joins `ledger_entry` to itself once per hop, tracks visited accounts to avoid infinite loops, and gets slower with each extra hop. In a graph database each relationship is stored as a direct pointer ("index-free adjacency"), so following a hop costs the same however large the dataset. The query reads like the fraud pattern it describes.
-
-✏️ Screenshot the graph view: the dev-X triangle and the 103→104→105→103 ring are visible at a glance.
+Not implemented
 
 ## 6. Column-family model: Cassandra (design only)
 
@@ -146,7 +122,4 @@ mongosh "mongodb://localhost:27017" --file 03_queries.js             > ../result
 ```
 Redis, Windows **PowerShell**: `Get-Content redis\redis_demo.redis | docker exec -i kobo-redis redis-cli > results\redis_demo.txt` (Command Prompt: `docker exec -i kobo-redis redis-cli < redis\redis_demo.redis`). Piped output prints `(nil)` as an empty line.
 
-Tested with MongoDB 8.0 (mongosh 2.3) and Redis 7.0.
-
-## 9. Reflection
-✏️ *3–5 sentences: when would you NOT use NoSQL for a fintech? Which store would you add first in a real system, and why?*
+Tested with MongoDB 8.0 (mongosh 2.3) .

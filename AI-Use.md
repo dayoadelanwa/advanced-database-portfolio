@@ -2,4 +2,4 @@
 - I personally ran scripts, tests myself, made modificationst to documentation and other changes.
 - https://aiven.io was used for the postgresql simulation for number 1
 - when it came to query optmization, I had to switch to posgres on docker with my local machine and subsequent scripts were run from there
-- 
+- Claude was used for commit/rollback and concurrency(for 2 sessions) test scripts
